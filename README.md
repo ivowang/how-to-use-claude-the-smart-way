@@ -6,7 +6,7 @@ Most people try Claude Code, decide it's a fancy autocomplete, and go back to wh
 
 ## How to setup Claude Code before a work
 
-A few things are worth doing up front. Each of them pays off the first time you actually need it.
+A few things are worth doing up front.
 
 ### Write a CLAUDE.md
 
