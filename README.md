@@ -158,45 +158,95 @@ The last three items are left as manual steps because their install commands dep
 
 One model reviewing its own work has blind spots. Two different models rarely share the same blind spot. The [**codex-plugin-cc**](https://github.com/openai/codex-plugin-cc) plugin lets you hand a diff to OpenAI's Codex for a second opinion from inside Claude Code. Researchers already trust ensembles over individual models when making predictions — the same logic applies to code review. It's the cheapest way to catch the bug Claude confidently wrote and then confidently approved.
 
-## Researcher workflows in practice
+**When to reach for it.** Every non-trivial diff that touches training code, eval code, or data pipelines. Not every one-line typo fix, but any change where a subtle bug would produce plausible-but-wrong numbers. Research code has a painful asymmetry: the cost of shipping a silent metric bug is orders of magnitude larger than the cost of a two-minute cross-review. Use it especially before you kick off a long training run or publish numbers.
 
-Here is what the above looks like applied to work you actually do. Each workflow comes with a prompt you can copy verbatim.
+**How to use it.** After Claude proposes a diff but before you apply it:
 
-**Reproducing a baseline from a messy repo.** Point Claude at the repo and say:
+> "Send this diff to Codex for review. Ask it to look specifically for: off-by-one errors, silent type coercions, reduction-axis mistakes in tensor ops, and anything that would change the numeric output without raising an error. Come back with a ranked list of concerns and the specific lines each concern points at."
 
-> "Read this repo and draft a `CLAUDE.md` summarizing what it is, how to run training and eval, where the data lives, and the three biggest things a new collaborator would trip on. Then draft a spec for reproducing Table 2 of the paper: hardware, seeds, configs, and success = within 0.3 points of the reported numbers. Dispatch subagents to read `src/`, `configs/`, and `scripts/` in parallel."
+The "specific lines" clause matters — a vague "looks fine" is useless, and a specific "line 47 uses `dim=0` where I think you want `dim=-1`" is actionable.
 
-You spend your attention on the decisions — not on tracing imports.
+**What to do with the review.** Don't treat Codex's verdict as ground truth either — it's just another model, with its own blind spots. The real signal is *disagreement*: when the two models flag different things, or one defends a choice the other questions, that is exactly the spot where you should read the code yourself and decide. The point is not consensus; the point is getting two different sets of eyes on the parts that most need them.
 
-**Debugging a training run.** The worst move is asking Claude to "fix it." The right move is to spec the bug first:
+## How to write smart prompts
 
-> "Here's the symptom: <paste logs>. Here's what I've already ruled out: <list>. Before proposing any fix, write a short bug spec: observed vs. expected behavior, candidate hypotheses ranked by likelihood, and the cheapest experiment that would falsify each one. We'll test them one at a time."
+Everything above — the mindset shift, spec-first discipline, subagents, verification — comes together in the prompts you actually type. A good prompt is not magic phrasing. It is the compressed form of everything you already decided before touching the keyboard. The fastest way to get better at prompting is to look at two prompts for the same task side by side and ask: why does the second one work?
 
-When Claude proposes a fix, run the diff through the codex plugin for a second opinion before you touch a production training run.
+For each task below, both prompts take about the same amount of effort to type. The difference is not length. The difference is what the author already decided.
 
-**Literature triage.** You have forty papers and four hours. Dump the PDFs into a directory and:
+### Task: reproducing a baseline from a messy repo
 
-> "Spawn a subagent per PDF in `papers/`. Each subagent summarizes one paper against this template: (1) problem, (2) method in two sentences, (3) headline result, (4) relevance to our work on <topic>, (5) one-line verdict — must-read / skim / skip. Collect the results into a single markdown table sorted by relevance."
+**Bad prompt:**
 
-You get back a filterable digest in the time it used to take you to skim five abstracts.
+> "Help me reproduce the results of this paper."
 
-**Data and eval wrangling.** Custom metrics, HuggingFace datasets with quirky schemas, eval harnesses that disagree subtly with each other — this is tedious code where Claude shines. The catch is that it's also code whose bugs produce plausible-looking numbers. Always pair this kind of task with a sanity check:
+**Why it's bad.** "Reproduce" is undefined — which table, which numbers, within what tolerance? No context about the repo. No spec, no plan, just a slot-machine pull. Claude will either guess the wrong target or ask ten questions you should have answered upfront.
 
-> "Before running this metric on the real dataset, construct a tiny synthetic example with a known answer I can compute by hand. Run the metric on that example first and show me the output. Only then run it on the real data."
+**Good prompt:**
 
-This is non-negotiable. Numbers you don't verify are numbers you'll regret citing.
+> "Read this repo and draft a `CLAUDE.md` summarizing entry points, run commands, and data assumptions. Then draft a spec for reproducing Table 2 of the paper: hardware, seeds, configs, and success = within 0.3 points of the reported numbers. Push back if anything is ambiguous. Dispatch subagents to audit `src/`, `configs/`, and `scripts/` in parallel."
 
-## Start here: five things to do before your next session
+**Why it's good.** It names concrete artifacts (a CLAUDE.md, then a spec), defines success numerically, invites pushback so Claude doesn't silently guess, and parallelizes the noisy exploration across subagents. Every earlier principle in this article is compressed into this one prompt.
 
-If you take nothing else from this article, do these five before you open Claude Code next:
+### Task: debugging a NaN loss
 
-1. **Install [superpowers](https://github.com/obra/superpowers).** Battle-tested skills for brainstorming, planning, debugging, TDD, and verification. The single highest-leverage install on this page.
-2. **Install [codex-plugin-cc](https://github.com/openai/codex-plugin-cc).** One-command setup, and the next time Claude writes a non-trivial diff, you get a second opinion from a different model for free.
-3. **Write a `CLAUDE.md`** for your current project. Paste the template above, spend ten minutes filling it in, and commit it. The difference shows up on the very next session.
-4. **Pick one upcoming task and spec it first.** Don't write code. Have Claude draft the spec and plan; read them, push back, approve. Notice how much of the task was actually unclear until you wrote it down.
-5. **Dispatch one subagent this week.** Anything independent: a codebase search, a paper summary, a config audit. Feel what it's like to get a clean answer back without your main conversation bloating up.
+**Bad prompt:**
 
-Do those five and you've already changed how you use the tool.
+> "My loss is NaN, fix it."
+
+**Why it's bad.** No context, no evidence, no ruling-out. It asks for a fix before a diagnosis, which is how you end up with three "fixes" that each paper over a different unverified guess. It also wastes Claude's turn on questions you already know the answers to.
+
+**Good prompt:**
+
+> "Symptom: training loss goes to NaN starting at step 3140 (log tail below). Already ruled out: FP16 overflow (we're in FP32), corrupted input batch (inspected step 3139's batch manually). Before proposing any fix, write a short bug spec — observed vs. expected behavior, candidate hypotheses ranked by likelihood, and the cheapest experiment that would falsify each. We'll test them one at a time."
+
+**Why it's good.** It hands Claude the evidence, closes doors you've already checked so it doesn't repeat your work, and demands a spec before a fix — which forces explicit hypothesis ranking instead of guess-and-patch. This is the Spec → Plan → Code discipline from earlier, applied to a bug.
+
+### Task: triaging forty papers
+
+**Bad prompt:**
+
+> "Read these forty papers and tell me which ones are important."
+
+**Why it's bad.** "Important" is undefined — important to what? Processing forty PDFs sequentially will flood your main context with raw paper text and leave you with an unstructured blob you can't re-read in six weeks. No parallelism, no structure, no relevance criterion.
+
+**Good prompt:**
+
+> "Spawn one subagent per PDF in `papers/`. Each subagent summarizes its paper against this template: (1) problem, (2) method in two sentences, (3) headline result, (4) relevance to our work on <topic>, (5) verdict — must-read / skim / skip. Collect all results into a single markdown table sorted by relevance. Do not include raw paper text in the replies."
+
+**Why it's good.** Parallelized via subagents, structured output you can filter later, an explicit relevance criterion that makes "important" concrete, and a noise-suppression clause that keeps your main context usable.
+
+### Task: computing a custom metric on a real dataset
+
+**Bad prompt:**
+
+> "Compute <custom metric> on the eval set and report the number."
+
+**Why it's bad.** You'll get a number. It will look plausible. You will cite it. And eventually someone will find the off-by-one in the metric implementation, and "plausible" will have cost you a revision cycle — or a corrigendum. Numbers you don't verify are numbers you'll regret.
+
+**Good prompt:**
+
+> "Before running <metric> on the real dataset, construct a tiny synthetic example with a known answer I can compute by hand. Run the metric on the synthetic example and show me the output. Only after I confirm it matches the hand-computed answer, run it on the real data."
+
+**Why it's good.** It makes the mindset shift's third implication — verify before trusting, especially numbers — literal. A synthetic known-answer test is cheap; the regret of citing a wrong metric is not.
+
+### Meta-prompting: have Claude help you write the prompt
+
+Sometimes the hardest part of a task is figuring out how to ask. **Meta-prompting** is exactly what it sounds like: using Claude to improve the prompt you're about to send Claude. It sounds silly until you try it and notice your first draft was missing half the context the task actually needed.
+
+Two forms that reliably work:
+
+**1. Critique-and-rewrite.** You have a draft prompt — have Claude tear it apart before you run it.
+
+> "Here's the prompt I'm about to run: <paste>. Don't execute it yet. Critique it: what is ambiguous, what context is missing that would change the answer, and what will you most likely hallucinate or get wrong if I run it as-is? Then rewrite it to fix those issues."
+
+**2. Reverse elicitation.** You have a fuzzy goal — have Claude ask *you* the questions it would need answered to do the task well, before it does anything.
+
+> "I want to investigate why our model underperforms on long-context inputs. Before doing anything, list the five questions you would need answered to run this investigation well — what evidence, what files, what metrics we should agree on upfront. I'll answer them, and then you'll write the prompt for the actual investigation."
+
+**A practical case.** Say you want to run an ablation but aren't sure what's worth ablating. The naive prompt — "what should I ablate?" — gets a generic checklist anyone could have written. The meta-prompt — "before suggesting ablations, ask me the five questions about the model, data, and hypothesis that would most change your recommendation, then use my answers to propose a prioritized list" — gets a list tailored to your actual situation, because Claude now has the context it needed to give a useful answer. The five-minute detour of answering those questions upfront saves the hour of arguing with a generic list.
+
+Meta-prompting is really just the mindset shift taken one step further: if you are onboarding a new teammate, sometimes the most productive thing you can do is let them interview you first.
 
 ## Closing
 
