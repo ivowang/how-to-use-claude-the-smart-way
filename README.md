@@ -12,7 +12,7 @@ A handful of features are worth learning on day one.
 
 A plain-text file at the root of your repo that Claude reads automatically on every session. Put the things a new collaborator would need: what the project is, how to run it, which directories matter, which gotchas have already burned you. Ten minutes of writing here saves hours of re-explaining later, and it compounds every session.
 
-Here's a starter template you can modify and paste into your own repo:
+If you are a researcher or PhD in the AI industry, it's also important for you to claim things like local GPU environment, network proxy and python envs. These items help Claude to run actual tests and experiments on your local machine. Here's a starter template you can modify and paste into your own repo:
 
 ```markdown
 # Project: <name>
@@ -25,6 +25,9 @@ One paragraph: the research question, the approach, and what counts as success.
 - **Conda env:** `clsea` is already set up; `conda activate clsea`. Do not create a new env.
 - **Versions:** Python 3.11, CUDA 12.1, torch 2.3.1 (pinned, see Gotchas).
 
+## Network
+We're behind the Great Firewall. If `pip`, `git`, HuggingFace, or any OpenAI/Google endpoint hangs, run `clashon` to enable the proxy and retry. A hang is almost always a network issue, not a bug, don't debug the wrong problem.
+
 ## How to run things
 - Train: `python train.py --config configs/base.yaml`
 - Eval:  `python eval.py --ckpt checkpoints/latest.pt`
@@ -35,9 +38,6 @@ One paragraph: the research question, the approach, and what counts as success.
 - `src/`      , model and training code; read this, don't touch `legacy/`
 - `scripts/`  , one-off analysis; not source of truth
 - `notebooks/`, exploration only; never import from these
-
-## Network
-We're behind the Great Firewall. If `pip`, `git`, HuggingFace, or any OpenAI/Google endpoint hangs, run `clashon` to enable the proxy and retry. A hang is almost always a network issue, not a bug, don't debug the wrong problem.
 
 ## LLM API access
 API keys for Qwen / GPT / Gemini / Claude live in `.env` at the repo root. Load them with `python-dotenv` or `source .env`. Never hardcode a key in a script, and never commit `.env`.
@@ -231,7 +231,7 @@ The fastest way to get better at prompting is to look at two prompts for the sam
 
 **Why it's good.** It makes the mindset shift's third implication, verify before trusting, especially numbers, literal. A synthetic known-answer test is cheap; the regret of citing a wrong metric is not.
 
-## For complex tasks: Spec -> Plan -> Code
+## For long-horizon tasks: Spec -> Plan -> Code
 
 The researcher's instinct is "just try it." Paste the pseudocode from the paper, run it, see what happens. That works for toy changes and falls apart on anything real, three hours later you're deep in a refactor you never agreed to, with no clear idea what "done" looks like.
 
@@ -252,6 +252,12 @@ Then, once the spec is approved:
 > "Now turn this spec into a step-by-step implementation plan. For each step, list the files you'll touch and what could go wrong. Do not write code yet."
 
 You'll feel the difference within one task.
+
+**Have Claude keep a development journal.** On any project that spans more than a handful of sessions, ask Claude to maintain its own notes in a `docs/dev/` directory: one short file per significant problem encountered, recording the symptom, what you tried, what ended up working, and the one-line lesson worth remembering next time. A prompt that sets up the habit:
+
+> "From now on, whenever we hit a non-trivial bug, debug a surprising behavior, or make a design decision with real tradeoffs, write a short note in `docs/dev/YYYY-MM-DD-<slug>.md` with: problem, root cause, what we tried, what ended up working, and a one-line lesson. Keep each file under a page. Before starting any new task in this repo, re-read the most recent notes in `docs/dev/` and tell me if anything there is relevant to what I'm about to ask."
+
+Each note is cheap and easy to maintain, but they accumulate. Across many sessions, Claude starts consulting its own past notes before repeating your debugging, spotting patterns across bugs, and pushing back when you're about to walk into something already documented. In a small but real way, this is an **agent self-evolving** at the memory layer: every session ends with the agent a little more experienced in *your specific project* than it was when the session began. You don't need fine-tuning or fancy long-term memory architectures for this, a folder of markdown files and a prompt that tells Claude to read them first is already most of the value.
 
 ## Close
 
