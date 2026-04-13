@@ -75,7 +75,27 @@ Fill in the blanks honestly. The gotchas section is where this file earns its ke
 
 ### Subagents — parallel work without context bloat
 
-Spawn independent agents to work on tasks in parallel without polluting your main context. "Search the entire codebase for every place we set a learning rate" is a subagent job — it returns a short answer without flooding your main conversation with thousands of lines of grep output. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
+Spawn independent agents to work on tasks in parallel without polluting your main context. A subagent runs in its own conversation, absorbs the noise (file contents, grep output, failed attempts), and hands you back a clean final answer. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
+
+**When to reach for one.** The test is simple. If a task is (a) *independent* — you don't need to argue with Claude mid-task — and (b) *noisy* — doing it inline would flood the main conversation with hundreds of lines of file contents or logs — it belongs in a subagent. Pattern-match on these:
+
+- "Find every place in the repo that sets a learning rate, and give me a table of filename, line, and value."
+- "Read these twelve candidate files and tell me which one contains the metric definition we're looking for."
+- "Run the test suite and report only which tests failed and the one-line reason for each."
+- "Summarize what this 800-line YAML config actually controls, grouped by subsystem."
+- "Audit all `*.ipynb` files in `notebooks/` and list any that import from `src/legacy/`."
+
+**How to dispatch one.** You do not need special syntax — you ask for it. A prompt that works:
+
+> "Dispatch a subagent to answer this: <question>. The subagent should <read these files / run this command / search for this pattern>. Return only the final answer plus file/line references. Do not include intermediate file contents or tool output in the reply."
+
+The last sentence is the important part. Without it, the subagent may dutifully paste everything it read into its response, which defeats the whole purpose. Tell it explicitly to absorb the noise and hand you back only the signal.
+
+**Dispatching several at once.** The real multiplier is parallelism. Two or four subagents working at the same time finish in roughly the time of one:
+
+> "Dispatch four subagents in parallel. Subagent 1: audit `src/` for learning-rate settings. Subagent 2: audit `configs/` for the same. Subagent 3: check `scripts/` for any hardcoded overrides. Subagent 4: check `notebooks/` for ad-hoc experiments. Each returns a short table. Collect all four into one summary when they're done."
+
+**When NOT to use one.** If you need to iterate with Claude on the answer — argue, push back, refine — keep it in the main conversation. Subagents are for one-shot lookups and bulk work, not dialogue. And don't dispatch a subagent for something so small you could just answer it inline in three lines; the framing overhead isn't worth it.
 
 ### Skills and plugins — reusable procedural knowledge
 
@@ -104,6 +124,35 @@ Skills and plugins are reusable capabilities Claude invokes on demand. Instead o
 **The directory.** The ecosystem moves fast, and any list in a README will go stale. Instead, bookmark the canonical index and browse it every couple of weeks:
 
 - [**awesome-claude-code**](https://github.com/hesreallyhim/awesome-claude-code) — the community index of skills, hooks, slash-commands, plugins, and agent orchestrators. Spend five minutes there periodically and you will notice the ecosystem before it notices you.
+
+**Quick-install script.** Paste this into your terminal to install the plugins above in one go. Requires the Claude Code CLI (`claude --version` should work). Safe to re-run; restart Claude Code afterward for the new plugins to activate.
+
+```bash
+#!/usr/bin/env bash
+set -e
+
+# 1. Add the plugin marketplaces we'll install from.
+claude plugin marketplace add anthropics/claude-plugins-official
+claude plugin marketplace add obra/superpowers-marketplace
+
+# 2. Install superpowers — the highest-leverage single install.
+claude plugin install superpowers@claude-plugins-official
+
+# 3. Install the official Anthropic plugins recommended above.
+for plugin in feature-dev code-simplifier claude-md-management skill-creator ralph-loop; do
+  claude plugin install "${plugin}@claude-plugins-official"
+done
+
+# 4. Items that require a per-repo install step — follow their READMEs:
+#    - codex-plugin-cc:  https://github.com/openai/codex-plugin-cc
+#    - playwright-skill: https://github.com/lackeyjb/playwright-skill
+#    - paper-search-mcp: https://github.com/openags/paper-search-mcp
+#      (typically: `claude mcp add paper-search -- <command from repo README>`)
+
+echo "Done. Restart Claude Code to activate the new plugins."
+```
+
+The last three items are left as manual steps because their install commands depend on details (package names, MCP transport, credentials) that change more often than is safe to hardcode here — the repos themselves have the current instructions and they take a minute each.
 
 ### Cross-model code review
 
