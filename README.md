@@ -266,7 +266,7 @@ If this article has been helpful to your research work, feel free to cite it:
 ```bibtex
 @misc{wang2026claudesmart,
   author       = {Ziyi Wang},
-  title        = {How to Use Claude the Smart Way: A Short Guide for AI Researchers},
+  title        = {How to Use Claude the Smart Way},
   year         = {2026},
   howpublished = {\url{https://github.com/ivowang/how-to-use-claude-the-smart-way}}
 }
