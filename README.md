@@ -87,6 +87,22 @@ The [**superpowers**](https://github.com/obra/superpowers) plugin bundles battle
 
 One model reviewing its own work has blind spots. Two different models rarely share the same blind spot. The [**codex-plugin-cc**](https://github.com/openai/codex-plugin-cc) plugin lets you hand a diff to OpenAI's Codex for a second opinion from inside Claude Code. Researchers already trust ensembles over individual models when making predictions — the same logic applies to code review. It's the cheapest way to catch the bug Claude confidently wrote and then confidently approved.
 
+### More skills and plugins worth knowing about
+
+Superpowers and codex-plugin-cc are the two most load-bearing installs, but the ecosystem is moving fast and the highest-leverage choice for *your* workflow may be something more specialized. A few entry points worth bookmarking:
+
+**The directory.** Instead of hardcoding a list that will go stale, point yourself at the curated index:
+
+- [**awesome-claude-code**](https://github.com/hesreallyhim/awesome-claude-code) — the canonical index of skills, hooks, slash-commands, plugins, and agent orchestrators. If you spend five minutes here every couple of weeks, you'll notice the ecosystem before it notices you.
+
+**Paper and arXiv tools for researchers specifically.** A handful of MCP servers let Claude fetch and read papers directly inside your session, so your literature-triage workflow stops being "manually dump PDFs into a directory" and becomes "ask Claude to go fetch them."
+
+- [**arxiv-mcp-server**](https://github.com/blazickjp/arxiv-mcp-server) — search and analyze arXiv papers from inside Claude Code. The most battle-tested option if you live on arXiv.
+- [**paper-search-mcp**](https://github.com/openags/paper-search-mcp) — broader coverage: arXiv, PubMed, bioRxiv, medRxiv, Google Scholar. Pick this one if your field isn't only CS.
+- [**arxiv-latex-mcp**](https://github.com/takashiishida/arxiv-latex-mcp) — fetches a paper's LaTeX source instead of the PDF, so Claude reads equations precisely instead of mangling them through OCR. Niche, but uniquely valuable for theory papers where the math is the whole point.
+
+Install one paper tool and one directory bookmark and you are already ahead of most people using Claude Code today.
+
 ## Researcher workflows in practice
 
 Here is what the above looks like applied to work you actually do. Each workflow comes with a prompt you can copy verbatim.
