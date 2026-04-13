@@ -21,23 +21,23 @@
 One paragraph： the research question， the approach， and what counts as success.
 
 ## Local environment
-- **GPUs：** 8× A800 40GB. Use whichever are idle — check with `nvidia-smi` before launching a run.
+- **GPUs：** 8× A800 40GB. Use whichever are idle, check with `nvidia-smi` before launching a run.
 - **Conda env：** `clsea` is already set up； `conda activate clsea`. Do not create a new env.
-- **Versions：** Python 3.11， CUDA 12.1， torch 2.3.1 (pinned — see Gotchas).
+- **Versions：** Python 3.11， CUDA 12.1， torch 2.3.1 (pinned, see Gotchas).
 
 ## How to run things
 - Train： `python train.py --config configs/base.yaml`
 - Eval：  `python eval.py --ckpt checkpoints/latest.pt`
 
 ## Where things live
-- `configs/`   — experiment configs； `base.yaml` is the canonical starting point
-- `data/`      — raw in `data/raw/`， processed in `data/processed/v2` (v1 is stale)
-- `src/`       — model and training code； read this， don't touch `legacy/`
-- `scripts/`   — one-off analysis； not source of truth
-- `notebooks/` — exploration only； never import from these
+- `configs/`  , experiment configs； `base.yaml` is the canonical starting point
+- `data/`     , raw in `data/raw/`， processed in `data/processed/v2` (v1 is stale)
+- `src/`      , model and training code； read this， don't touch `legacy/`
+- `scripts/`  , one-off analysis； not source of truth
+- `notebooks/`, exploration only； never import from these
 
 ## Network
-We're behind the Great Firewall. If `pip`， `git`， HuggingFace， or any OpenAI/Google endpoint hangs， run `clashon` to enable the proxy and retry. A hang is almost always a network issue， not a bug — don't debug the wrong problem.
+We're behind the Great Firewall. If `pip`， `git`， HuggingFace， or any OpenAI/Google endpoint hangs， run `clashon` to enable the proxy and retry. A hang is almost always a network issue， not a bug, don't debug the wrong problem.
 
 ## LLM API access
 API keys for Qwen / GPT / Gemini / Claude live in `.env` at the repo root. Load them with `python-dotenv` or `source .env`. Never hardcode a key in a script， and never commit `.env`.
@@ -47,7 +47,7 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 
 ## Gotchas
 - Eval silently skips NaN-loss batches； check `logs/skipped.txt` after every run
-- Do NOT upgrade torch past 2.3.1 — breaks the custom CUDA kernel in `src/ops/`
+- Do NOT upgrade torch past 2.3.1, breaks the custom CUDA kernel in `src/ops/`
 - Seeds are set in `configs/base.yaml`， not in the training script
 - W&B project is `myproject-dev`； `myproject` is reserved for paper runs
 ```
@@ -114,7 +114,7 @@ set -e
 claude plugin marketplace add anthropics/claude-plugins-official
 claude plugin marketplace add obra/superpowers-marketplace
 
-# 2. Install superpowers — the highest-leverage single install.
+# 2. Install superpowers, the highest-leverage single install.
 claude plugin install superpowers@claude-plugins-official
 
 # 3. Install the official Anthropic plugins recommended above.
@@ -122,7 +122,7 @@ for plugin in feature-dev code-simplifier claude-md-management skill-creator ral
   claude plugin install "${plugin}@claude-plugins-official"
 done
 
-# 4. Items that require a per-repo install step — follow their READMEs：
+# 4. Items that require a per-repo install step, follow their READMEs：
 #    - codex-plugin-cc：  https：//github.com/openai/codex-plugin-cc
 #    - playwright-skill： https：//github.com/lackeyjb/playwright-skill
 #    - paper-search-mcp： https：//github.com/openags/paper-search-mcp
@@ -163,7 +163,7 @@ echo "Done. Restart Claude Code to activate the new plugins."
 
 **2. 反向引导。** 你有一个模糊的目标，让 Claude 先向*你*提问：把它做好这个任务需要你先回答的问题列出来，然后再开始动手。
 
-> "I want to investigate why our model underperforms on long-context inputs. Before doing anything， list the five questions you would need answered to run this investigation well — what evidence， what files， what metrics we should agree on upfront. I'll answer them， and then you'll write the prompt for the actual investigation."
+> "I want to investigate why our model underperforms on long-context inputs. Before doing anything， list the five questions you would need answered to run this investigation well, what evidence， what files， what metrics we should agree on upfront. I'll answer them， and then you'll write the prompt for the actual investigation."
 
 **一个实际案例。** 假设你想跑一组消融实验，但不确定哪些因素值得消融。天真版的 prompt，"我应该消融什么?"，只会换来一份谁都写得出来的通用检查单。Meta 版的 prompt，"在提出消融方案之前，先问我五个关于模型、数据和假设的问题，这些问题的答案最能改变你的推荐；然后根据我的回答，给我一份带优先级的方案"，能换来一份针对你具体情况量身定制的列表，因为 Claude 现在拿到了它给出有用答案所需要的上下文。花五分钟回答那几个问题的代价，省下的是一小时和一份通用列表拉扯的时间。
 
@@ -197,9 +197,9 @@ Meta-prompting 其实只是"思维模式转变"再往前推一步：既然你是
 
 **好的 prompt：**
 
-> "Symptom： training loss goes to NaN starting at step 3140 (log tail below). Already ruled out： FP16 overflow (we're in FP32)， corrupted input batch (inspected step 3139's batch manually). Before proposing any fix， write a short bug spec — observed vs. expected behavior， candidate hypotheses ranked by likelihood， and the cheapest experiment that would falsify each. We'll test them one at a time."
+> "Symptom： training loss goes to NaN starting at step 3140 (log tail below). Already ruled out： FP16 overflow (we're in FP32)， corrupted input batch (inspected step 3139's batch manually). Before proposing any fix， write a short bug spec, observed vs. expected behavior， candidate hypotheses ranked by likelihood， and the cheapest experiment that would falsify each. We'll test them one at a time."
 
-**为什么好。** 它把证据直接递给 Claude，关掉了你已经确认过的门，让它不用重复你的工作；而且要求在修 bug 之前先写一份 bug spec，这迫使它把假设显式地排个序，而不是靠猜-补-测。这正是前面讲过的 Spec → Plan → Code 纪律应用在调 bug 上的版本。
+**为什么好。** 它把证据直接递给 Claude，关掉了你已经确认过的门，让它不用重复你的工作；而且要求在修 bug 之前先写一份 bug spec，这迫使它把假设显式地排个序，而不是靠猜-补-测。这正是后面要讲的 Spec → Plan → Code 纪律应用在调 bug 上的版本。
 
 #### 示例 3：让 Claude 分诊四十篇论文
 
@@ -211,7 +211,7 @@ Meta-prompting 其实只是"思维模式转变"再往前推一步：既然你是
 
 **好的 prompt：**
 
-> "Spawn one subagent per PDF in `papers/`. Each subagent summarizes its paper against this template： (1) problem， (2) method in two sentences， (3) headline result， (4) relevance to our work on <topic>， (5) verdict — must-read / skim / skip. Collect all results into a single markdown table sorted by relevance. Do not include raw paper text in the replies."
+> "Spawn one subagent per PDF in `papers/`. Each subagent summarizes its paper against this template： (1) problem， (2) method in two sentences， (3) headline result， (4) relevance to our work on <topic>， (5) verdict, must-read / skim / skip. Collect all results into a single markdown table sorted by relevance. Do not include raw paper text in the replies."
 
 **为什么好。** 通过 subagent 并行、输出结构化(之后可以直接过滤)，给了一个显式的相关性判据把"重要"变成具体的东西，并且有一条压噪声的子句把主上下文保持在可用状态。
 

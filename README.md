@@ -201,7 +201,7 @@ The fastest way to get better at prompting is to look at two prompts for the sam
 
 > "Symptom: training loss goes to NaN starting at step 3140 (log tail below). Already ruled out: FP16 overflow (we're in FP32), corrupted input batch (inspected step 3139's batch manually). Before proposing any fix, write a short bug spec, observed vs. expected behavior, candidate hypotheses ranked by likelihood, and the cheapest experiment that would falsify each. We'll test them one at a time."
 
-**Why it's good.** It hands Claude the evidence, closes doors you've already checked so it doesn't repeat your work, and demands a spec before a fix, which forces explicit hypothesis ranking instead of guess-and-patch. This is the Spec → Plan → Code discipline from earlier, applied to a bug.
+**Why it's good.** It hands Claude the evidence, closes doors you've already checked so it doesn't repeat your work, and demands a spec before a fix, which forces explicit hypothesis ranking instead of guess-and-patch. This is the Spec → Plan → Code discipline applied to a bug. We will talk about this discipline later in detail.
 
 #### Example.3 Ask Claude to triage forty papers
 
