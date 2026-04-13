@@ -6,13 +6,13 @@
 
 ## 在开始工作前如何配置好 Claude Code
 
-有几个功能值得你在第一天就学会，每一个都会在第一次用到时就回本。
+有几个功能值得你在第一天就学会。
 
 ### 写一份 CLAUDE.md
 
 这是一份放在 repo 根目录下的纯文本文件，Claude 在每次会话开始时都会自动读取它。把一个新协作者需要知道的东西都写进去：这个项目是什么、怎么跑、哪些目录重要、哪些坑已经有人踩过。花十分钟写这份文件，能省下后面几个小时反复解释的时间，而且每一次会话都在复利地收获价值。
 
-下面是一份起始模板，你可以粘贴到自己的 repo 里：
+下面是一份起始模板，你可以修改后粘贴到自己的 repo 里：
 
 ```markdown
 # Project： <name>
@@ -51,8 +51,6 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 - Seeds are set in `configs/base.yaml`， not in the training script
 - W&B project is `myproject-dev`； `myproject` is reserved for paper runs
 ```
-
-认真把每一栏填满。
 
 ### 使用 subagents
 

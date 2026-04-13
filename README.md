@@ -6,13 +6,13 @@ Most people meet Claude Code and file it mentally as "a fancy autocomplete." Tha
 
 ## How to setup Claude Code before a work
 
-A handful of features are worth learning on day one. Each one pays for itself the first time you use it.
+A handful of features are worth learning on day one.
 
 ### Write a CLAUDE.md
 
 A plain-text file at the root of your repo that Claude reads automatically on every session. Put the things a new collaborator would need: what the project is, how to run it, which directories matter, which gotchas have already burned you. Ten minutes of writing here saves hours of re-explaining later, and it compounds every session.
 
-Here's a starter template you can paste into your own repo and edit:
+Here's a starter template you can modify and paste into your own repo:
 
 ```markdown
 # Project: <name>
