@@ -1,1 +1,1 @@
-# How To Ask Questions The Smart Way
+# How to Vibe-Coding the Smart Way
