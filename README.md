@@ -2,17 +2,17 @@
 
 [中文版 (Chinese)](README_ZH.md)
 
-Most people meet Claude Code and file it mentally as "a fancy autocomplete." That framing is why they get mediocre results. Claude Code isn't a faster keyboard, it's a collaborator you delegate to. The distinction matters most for researchers, because your bottleneck was never typing. It's attention: the scarce, finite budget you spend on which experiment to run, which bug is real, which paper is worth reading. Used well, Claude Code gives you that attention back. Used poorly, it just generates more things for you to review.
+Most people try Claude Code, decide it's a fancy autocomplete, and go back to what they were doing. That's why they end up with mediocre results. The better way to think about Claude Code is as a collaborator you hand work to, not as a faster keyboard. This matters more for researchers than for almost anyone else, because typing was never what was slowing you down. Your real bottleneck is attention: figuring out which experiment to run next, which bug is actually a bug, which paper is worth an afternoon. Used well, Claude Code gives a lot of that attention back. Used badly, it just hands you more things to review.
 
 ## How to setup Claude Code before a work
 
-A handful of features are worth learning on day one.
+A few things are worth doing up front. Each of them pays off the first time you actually need it.
 
 ### Write a CLAUDE.md
 
-A plain-text file at the root of your repo that Claude reads automatically on every session. Put the things a new collaborator would need: what the project is, how to run it, which directories matter, which gotchas have already burned you. Ten minutes of writing here saves hours of re-explaining later, and it compounds every session.
+`CLAUDE.md` is a plain text file you drop at the root of your repo. Claude reads it automatically at the start of every session. Treat it like the onboarding doc you'd write for a new collaborator: what the project is, how to run things, which directories matter, which things have already bitten you. Ten minutes spent writing it saves a lot of re-explaining later, and every session afterward gets to start from that higher baseline.
 
-If you are a researcher or PhD in the AI industry, it's also important for you to claim things like local GPU environment, network proxy and python envs. These items help Claude to run actual tests and experiments on your local machine. Here's a starter template you can modify and paste into your own repo:
+If you're a researcher or a PhD student, your `CLAUDE.md` really should describe your local setup: GPUs, network config, Python env, and anything else Claude needs to know to actually run experiments on your machine. Here's a template you can lift and edit in about five minutes:
 
 ```markdown
 # Project: <name>
@@ -52,37 +52,37 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 - W&B project is `myproject-dev`; `myproject` is reserved for paper runs
 ```
 
-Fill in the blanks honestly.
+Fill it in honestly.
 
 ### Extend Claude with skills and plugins
 
-Skills and plugins are reusable capabilities Claude invokes on demand. Instead of re-explaining every session how you want TDD, debugging, or literature search to work, you install a skill once and it is available every session afterward. This is where the compounding value of the ecosystem lives, and it is worth spending real time here.
+Skills and plugins are reusable bits of capability that Claude can call on when it needs them. Install one once, and every future session has access to it. No more re-explaining how you want TDD to work, or debugging, or literature search. You just install the thing. This is probably where the ecosystem gives you the most back per minute of effort, and it's worth spending real time here.
 
-**The one install you should not skip.**
+**The one you shouldn't skip.**
 
-- [**superpowers**](https://github.com/obra/superpowers) Bundles battle-tested skills for brainstorming, writing plans, systematic debugging, TDD, and verification-before-completion. Installs in under a minute, and your baseline quality jumps noticeably without any extra effort on your part.
+- [**superpowers**](https://github.com/obra/superpowers) packages up a set of well-tested skills for brainstorming, writing plans, systematic debugging, TDD, and verification. Install takes under a minute. You'll notice the baseline quality jump afterward, and you don't have to do anything extra for it.
 
-**Official Anthropic plugins** ([anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)). A curated set of first-party plugins. The ones most relevant to research work:
+**Official Anthropic plugins** (from [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)). A curated set of first-party plugins. The ones most worth installing for research work:
 
-- [**feature-dev**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/feature-dev), a structured spec → plan → implement → verify workflow, packaged as a plugin. Pairs directly with the discipline described above.
-- [**code-simplifier**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-simplifier), reviews changed code for reuse, quality, and efficiency, then fixes what it finds. Keeps prototype code from rotting into spaghetti before a collaborator sees it.
-- [**claude-md-management**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management), creates, audits, and maintains your CLAUDE.md. A clean CLAUDE.md improves every subsequent session, and this plugin removes the excuse of "I'll update it later."
-- [**skill-creator**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), the meta-skill for writing new skills. The fastest path to capturing a repeatable research workflow (your preferred figure style, your dataset-loading boilerplate, your eval runner) as a reusable skill of your own.
-- [**ralph-loop**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop), runs Claude Code in a recursive autonomous loop until a specification is satisfied. Designed for unattended overnight iteration: config sweeps, flaky-test matrices, grinding through TODO backlogs while you sleep.
+- [**feature-dev**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/feature-dev), a structured spec → plan → implement → verify workflow, packaged as a plugin. The plugin version of the Spec → Plan → Code discipline we get into later.
+- [**code-simplifier**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-simplifier), reviews the code you've changed for readability, reuse, and efficiency, and then fixes what it finds. Good for keeping prototype code from going feral before a collaborator sees it.
+- [**claude-md-management**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management), creates, audits, and maintains your `CLAUDE.md`. A clean `CLAUDE.md` makes every session after it better, and this plugin takes away the usual excuse for letting it rot.
+- [**skill-creator**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator), the meta-skill for writing new skills. The fastest way to turn the things you do on every project into something Claude just does for you.
+- [**ralph-loop**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop), runs Claude Code in a recursive loop until a spec is satisfied. Made for unattended overnight work: config sweeps, fighting a flaky test matrix, eating through a TODO list while you sleep.
 
 **Browser automation and visual verification.**
 
-- [**playwright-skill**](https://github.com/lackeyjb/playwright-skill), lets Claude drive a real browser via Playwright to run E2E tests and verify visual output. Researchers building web-based demos, interactive dashboards, or paper artifact sites can have Claude check the thing actually works end-to-end instead of just compiling.
+- [**playwright-skill**](https://github.com/lackeyjb/playwright-skill), lets Claude drive an actual browser through Playwright. If you're shipping a web demo, an interactive dashboard, or a paper artifact site, this is how you get Claude to check that the thing *works* rather than just that the code compiled.
 
 **Literature and papers.**
 
-- [**paper-search-mcp**](https://github.com/openags/paper-search-mcp), an MCP server giving Claude direct access to arXiv, PubMed, bioRxiv, medRxiv, and Google Scholar. Install this and your literature-triage workflow stops being "manually dump PDFs into a directory" and becomes "ask Claude to go fetch them."
+- [**paper-search-mcp**](https://github.com/openags/paper-search-mcp), an MCP server that gives Claude direct access to arXiv, PubMed, bioRxiv, medRxiv, and Google Scholar. Install it and you stop having to dump folders of PDFs at Claude. You tell it what you're looking for and it goes and finds them.
 
-**The directory.** The ecosystem moves fast, and any list in a README will go stale. Instead, bookmark the canonical index and browse it every couple of weeks:
+**A directory worth bookmarking.** The ecosystem moves fast, and any hardcoded list in a README will be out of date within a month. Better to bookmark the community index and come back to it every few weeks:
 
-- [**awesome-claude-code**](https://github.com/hesreallyhim/awesome-claude-code), the community index of skills, hooks, slash-commands, plugins, and agent orchestrators. Spend five minutes there periodically and you will notice the ecosystem before it notices you.
+- [**awesome-claude-code**](https://github.com/hesreallyhim/awesome-claude-code), a community-maintained index of skills, hooks, slash commands, plugins, and agent orchestrators. Five minutes there every so often is enough to stay caught up.
 
-**Quick-install script.** Paste this into your terminal to install the plugins above in one go. Requires the Claude Code CLI (`claude --version` should work). Safe to re-run; restart Claude Code afterward for the new plugins to activate.
+**A quick install script.** Paste this into your terminal to install the plugins above in one shot. You'll need the Claude Code CLI (`claude --version` should work). Safe to re-run. Restart Claude Code afterward so the new plugins actually load.
 
 ```bash
 #!/usr/bin/env bash
@@ -109,71 +109,101 @@ done
 echo "Done. Restart Claude Code to activate the new plugins."
 ```
 
-The last three items are left as manual steps because their install commands depend on details (package names, MCP transport, credentials) that change more often than is safe to hardcode here.
+The last three aren't scripted because their install commands depend on details (package names, MCP transport, credentials) that change too often to safely hardcode here.
 
 ### Cross-check Claude with another model
 
-One model reviewing its own work has blind spots. Two different models rarely share the same blind spot. The [**codex-plugin-cc**](https://github.com/openai/codex-plugin-cc) plugin lets you hand a diff to OpenAI's Codex for a second opinion from inside Claude Code. Researchers already trust ensembles over individual models when making predictions, the same logic applies to code review. It's the cheapest way to catch the bug Claude confidently wrote and then confidently approved.
+One model reviewing its own work has blind spots. Two different models rarely share the *same* blind spots. The [**codex-plugin-cc**](https://github.com/openai/codex-plugin-cc) plugin lets you hand a diff to OpenAI's Codex for a second opinion without leaving Claude Code. Researchers already trust ensembles over single models when making predictions. Apply the same instinct to code review. It's about the cheapest way to catch the kind of bug Claude confidently writes and then confidently signs off on.
 
-**When to reach for it.** Every non-trivial diff that touches training code, eval code, or data pipelines. Not every one-line typo fix, but any change where a subtle bug would produce plausible-but-wrong numbers. Research code has a painful asymmetry: the cost of shipping a silent metric bug is orders of magnitude larger than the cost of a two-minute cross-review. Use it especially before you kick off a long training run or publish numbers.
+**When to use it.** Any non-trivial diff that touches training code, eval code, or a data pipeline. Not every one-line typo fix, but anything where a subtle bug would quietly produce wrong numbers. The asymmetry in research code is unforgiving: the cost of shipping a silent metric bug is much higher than the cost of a two-minute review. Use it especially before you kick off a long training run, and before you publish any numbers.
 
-**How to use it.** After Claude proposes a diff but before you apply it:
+**How to use it.** After Claude writes a diff, and before you apply it:
 
 > "Send this diff to Codex for review. Ask it to look specifically for: off-by-one errors, silent type coercions, reduction-axis mistakes in tensor ops, and anything that would change the numeric output without raising an error. Come back with a ranked list of concerns and the specific lines each concern points at."
 
-The "specific lines" clause matters, a vague "looks fine" is useless, and a specific "line 47 uses `dim=0` where I think you want `dim=-1`" is actionable.
+The specific-lines clause is doing most of the work here. A vague verdict that the code looks fine is worth nothing. Something concrete, like a note that line 47 uses `dim=0` where you probably want `dim=-1`, is what you can actually act on.
 
-**What to do with the review.** Don't treat Codex's verdict as ground truth either, it's just another model, with its own blind spots. The real signal is *disagreement*: when the two models flag different things, or one defends a choice the other questions, that is exactly the spot where you should read the code yourself and decide. The point is not consensus; the point is getting two different sets of eyes on the parts that most need them.
+**What to do with the review.** Don't treat Codex's verdict as ground truth either. It's just another model, with its own blind spots. What you actually want out of this is *disagreement*. When the two models flag different things, or one defends a choice the other questions, that's exactly where you should stop and read the code yourself. The goal isn't to get them to agree. It's to point two different pairs of eyes at the places that most need a second look.
+
+### Have Claude keep a development journal
+
+For any project that's going to span more than a handful of sessions, have Claude keep its own notes in a `docs/dev/` folder, one short file per thing worth remembering. Each file captures the symptom, what you tried, what finally worked, and the one-line takeaway. Here's a prompt that sets the habit on day one:
+
+> "From now on, whenever we hit a non-trivial bug, debug a surprising behavior, or make a design decision with real tradeoffs, write a short note in `docs/dev/YYYY-MM-DD-<slug>.md` with: problem, root cause, what we tried, what ended up working, and a one-line lesson. Keep each file under a page. Before starting any new task in this repo, re-read the most recent notes in `docs/dev/` and tell me if anything there is relevant to what I'm about to ask."
+
+Each note is a minute to write and basically free to maintain. But they stack up. A few dozen sessions in, you'll notice Claude starting to check its own old notes before repeating a debugging session you already ran, spotting patterns across bugs, and waving you off from decisions a past note warned against. In a modest but genuine sense, this is an agent self-evolving at the memory layer: every session ends with it slightly more experienced in *your* specific project than when that session started. You don't need fine-tuning or a long-term memory architecture for any of this. A folder of markdown files plus a prompt telling Claude to read it first gets you most of the way there.
 
 ## How to write smart prompts in a work
 
-After completing these basic settings, we can finally start using Claude to do some tasks. The basic way humans interact with Claude is by writing prompts. A good prompt is not magic phrasing. It is the compressed form of everything you already decided before touching the keyboard. 
+With the setup out of the way, you can actually start using Claude for tasks. The main way you'll interact with it is by writing prompts, and there's nothing magical about good ones. A good prompt is just the compressed form of everything you'd already figured out before you started typing.
+
+### Spec -> Plan -> Code
+
+The researcher's instinct is to just try it. Paste the pseudocode from the paper, run it, see what happens. That's fine for toy changes. It falls apart on anything real. Three hours in, you're deep in a refactor you never signed up for, with no clear idea what being done is even supposed to mean.
+
+The discipline that's been catching on is simple: write a *spec* before the plan, and a *plan* before any code.
+
+- A **spec** answers *what* and *why*. What are we building? What counts as done? What's explicitly out of scope?
+- A **plan** answers *how*. Which files change, in what order, and what could break along the way?
+- The **code** is just the mechanical execution of the plan, once you've approved it.
+
+Each stage is cheap to rewrite and expensive to skip. For a researcher, the mapping is clean: the spec is the experiment you're proposing, the plan is the runbook, the code is the implementation. As a side benefit, six weeks from now, when you've forgotten why you made the choices you made, the spec is the thing you'll actually want open in your lab notebook.
+
+**Try this on your next task.** Instead of opening Claude and typing *implement X*, start with:
+
+> "Before writing any code, draft a one-page spec for X: what we're building, success criteria, explicit non-goals, and the riskiest assumptions. Ask me questions until you're confident the spec is right."
+
+Once the spec is signed off:
+
+> "Now turn this spec into a step-by-step implementation plan. For each step, list the files you'll touch and what could go wrong. Do not write code yet."
+
+One task in, you'll feel the difference.
 
 ### Use subagents
 
-Spawn independent agents to work on tasks in parallel without polluting your main context. A subagent runs in its own conversation, absorbs the noise (file contents, grep output, failed attempts), and hands you back a clean final answer. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
+Subagents let you spin off independent tasks in parallel without dragging noise into your main conversation. Each subagent runs in its own isolated chat, absorbs all the messy stuff (file contents, grep output, dead ends), and hands you back a clean final answer. Think of them the way you think of background processes: anything you can cut loose, cut it loose.
 
-**When to reach for one.** The test is simple. If a task is (a) *independent*, you don't need to argue with Claude mid-task, and (b) *noisy*, doing it inline would flood the main conversation with hundreds of lines of file contents or logs, it belongs in a subagent. Pattern-match on these:
+**When to reach for one.** The test is simple. A task belongs in a subagent if it is (a) *independent*, meaning you won't need to argue with Claude mid-task, and (b) *noisy*, meaning doing it inline would flood your main conversation with hundreds of lines of file contents or logs. A few things to pattern-match on:
 
-- "Find every place in the repo that sets a learning rate, and give me a table of filename, line, and value."
-- "Read these twelve candidate files and tell me which one contains the metric definition we're looking for."
-- "Run the test suite and report only which tests failed and the one-line reason for each."
-- "Summarize what this 800-line YAML config actually controls, grouped by subsystem."
-- "Audit all `*.ipynb` files in `notebooks/` and list any that import from `src/legacy/`."
+- Find every place in the repo that sets a learning rate, and report a table of filename, line, and value.
+- Read these twelve candidate files and tell me which one contains the metric definition we're looking for.
+- Run the test suite and report only which tests failed, with the one-line reason for each.
+- Summarize what this 800-line YAML config actually controls, grouped by subsystem.
+- Audit all `*.ipynb` files in `notebooks/` and list any that import from `src/legacy/`.
 
-**How to dispatch one.** You do not need special syntax, you ask for it. A prompt that works:
+**How to dispatch one.** No special syntax. You just ask for it. Something like:
 
 > "Dispatch a subagent to answer this: <question>. The subagent should <read these files / run this command / search for this pattern>. Return only the final answer plus file/line references. Do not include intermediate file contents or tool output in the reply."
 
-The last sentence is the important part. Without it, the subagent may dutifully paste everything it read into its response, which defeats the whole purpose. Tell it explicitly to absorb the noise and hand you back only the signal.
+That last sentence is the one that matters. Leave it out and the subagent will dutifully dump everything it read back into its reply, which defeats the whole point. Tell it plainly: absorb the noise, hand me the signal.
 
-**Dispatching several at once.** The real multiplier is parallelism. Two or four subagents working at the same time finish in roughly the time of one:
+**Dispatching several at once.** The real win is parallelism. Two or four subagents running at the same time finish in roughly the time of one:
 
 > "Dispatch four subagents in parallel. Subagent 1: audit `src/` for learning-rate settings. Subagent 2: audit `configs/` for the same. Subagent 3: check `scripts/` for any hardcoded overrides. Subagent 4: check `notebooks/` for ad-hoc experiments. Each returns a short table. Collect all four into one summary when they're done."
 
-**When NOT to use one.** If you need to iterate with Claude on the answer, like argue, push back, and refine, then keep it in the main conversation. Subagents are for one-shot lookups and bulk work, not dialogue. And don't dispatch a subagent for something so small you could just answer it inline in three lines; the framing overhead isn't worth it.
+**When not to use one.** If you need to go back and forth with Claude on the answer, whether that means arguing with it, pushing back, or iterating, keep the task in your main conversation. Subagents are for one-shot lookups and bulk work, not for dialogue. And don't dispatch one for something small enough that you could just answer it inline in three lines. The overhead of setting up a subagent isn't worth it for tiny tasks.
 
 ### Meta-Prompting
 
-Sometimes the hardest part of a task is figuring out how to ask. **Meta-prompting** is exactly what it sounds like: using Claude to improve the prompt you're about to send Claude. It sounds silly until you try it and notice your first draft was missing half the context the task actually needed.
+Sometimes the hardest part of a task is figuring out how to ask for it. Meta-prompting is exactly what it sounds like: you use Claude to improve the prompt you're about to send to Claude. It sounds silly. Try it once, and you'll notice your first draft was missing half the context the task actually needed.
 
-Two forms that reliably work:
+Two patterns that reliably work.
 
-**1. Critique-and-rewrite.** You have a draft prompt, have Claude tear it apart before you run it.
+**1. Critique and rewrite.** You've got a draft prompt. Have Claude tear it apart before you run it.
 
-> "Here's the prompt I'm about to run: <paste>. Don't execute it yet. Critique it: what is ambiguous, what context is missing that would change the answer, and what will you most likely hallucinate or get wrong if I run it as-is? Then rewrite it to fix those issues."
+> "Here's the prompt I'm about to run: <paste>. Don't execute it yet. Critique it: what's ambiguous, what context is missing that would change the answer, and what will you most likely hallucinate or get wrong if I run it as-is? Then rewrite it to fix those issues."
 
-**2. Reverse elicitation.** You have a fuzzy goal, have Claude ask *you* the questions it would need answered to do the task well, before it does anything.
+**2. Reverse elicitation.** You've got a fuzzy goal. Have Claude interview *you* for what it needs before it does anything.
 
-> "I want to investigate why our model underperforms on long-context inputs. Before doing anything, list the five questions you would need answered to run this investigation well, what evidence, what files, what metrics we should agree on upfront. I'll answer them, and then you'll write the prompt for the actual investigation."
+> "I want to investigate why our model underperforms on long-context inputs. Before doing anything, list the five questions you'd need answered to run this investigation well: what evidence, what files, what metrics we should agree on up front. I'll answer them, then you'll write the prompt for the actual investigation."
 
-**A practical case.** Say you want to run an ablation but aren't sure what's worth ablating. The naive prompt, "what should I ablate?", gets a generic checklist anyone could have written. The meta-prompt, "before suggesting ablations, ask me the five questions about the model, data, and hypothesis that would most change your recommendation, then use my answers to propose a prioritized list", gets a list tailored to your actual situation, because Claude now has the context it needed to give a useful answer. The five-minute detour of answering those questions upfront saves the hour of arguing with a generic list.
+**A real case.** Say you want to run an ablation but you're not sure what's worth ablating. Asking Claude what to ablate, cold, gets you a generic checklist anyone could have written. Asking Claude to first interview you about the model, the data, and the hypothesis, and then to propose a prioritized list based on your answers, gets you something tailored to your actual situation. By the time Claude answers, it has the context it needed to be useful. The five minutes you spend answering those questions up front saves you an hour of arguing with a generic list.
 
-Meta-prompting is really just the mindset shift taken one step further: if you are onboarding a new teammate, sometimes the most productive thing you can do is let them interview you first.
+Meta-prompting takes the teammate framing one step further. If you are onboarding a new teammate, sometimes the most useful thing you can do is let them interview you first.
 
 ### Prompt examples
 
-The fastest way to get better at prompting is to look at two prompts for the same task side by side and ask: why does the second one work? The difference is not length. The difference is what the author already decided.
+The fastest way to get better at prompting is to put two prompts for the same task side by side and ask: why does the second one work? It isn't that the good one is longer. It's that the person who wrote it had already decided more before they started typing.
 
 #### Example.1 Ask Claude to reproduce a baseline
 
@@ -181,13 +211,13 @@ The fastest way to get better at prompting is to look at two prompts for the sam
 
 > "Help me reproduce the results of this paper."
 
-**Why it's bad.** "Reproduce" is undefined, which table, which numbers, within what tolerance? No context about the repo. No spec, no plan, just a slot-machine pull. Claude will either guess the wrong target or ask ten questions you should have answered upfront.
+**Why it's bad.** The word *reproduce* isn't defined. Which table? Which numbers? Within what tolerance? There's no context about the repo, no spec, no plan, just a pull on a slot machine. Claude will either guess the wrong target or fire back ten questions you should have answered yourself before asking.
 
 **Good prompt:**
 
 > "Read this repo and draft a `CLAUDE.md` summarizing entry points, run commands, and data assumptions. Then draft a spec for reproducing Table 2 of the paper: hardware, seeds, configs, and success = within 0.3 points of the reported numbers. Push back if anything is ambiguous. Dispatch subagents to audit `src/`, `configs/`, and `scripts/` in parallel."
 
-**Why it's good.** It names concrete artifacts (a CLAUDE.md, then a spec), defines success numerically, invites pushback so Claude doesn't silently guess, and parallelizes the noisy exploration across subagents. Every earlier principle in this article is compressed into this one prompt.
+**Why it's good.** It names concrete deliverables: first a `CLAUDE.md`, then a spec. It pins success to a number. It tells Claude to push back instead of silently guessing. And it parallelizes the noisy exploration with subagents. Basically everything else in this article, compressed into a single prompt.
 
 #### Example.2 Ask Claude to debug a NaN loss
 
@@ -195,13 +225,13 @@ The fastest way to get better at prompting is to look at two prompts for the sam
 
 > "My loss is NaN, fix it."
 
-**Why it's bad.** No context, no evidence, no ruling-out. It asks for a fix before a diagnosis, which is how you end up with three "fixes" that each paper over a different unverified guess. It also wastes Claude's turn on questions you already know the answers to.
+**Why it's bad.** No context, no evidence, no mention of what you've already ruled out. It asks for a fix before a diagnosis, which is how you end up with three different attempted fixes that each paper over a different unverified guess. It also wastes Claude's turn asking you questions you already know the answers to.
 
 **Good prompt:**
 
 > "Symptom: training loss goes to NaN starting at step 3140 (log tail below). Already ruled out: FP16 overflow (we're in FP32), corrupted input batch (inspected step 3139's batch manually). Before proposing any fix, write a short bug spec, observed vs. expected behavior, candidate hypotheses ranked by likelihood, and the cheapest experiment that would falsify each. We'll test them one at a time."
 
-**Why it's good.** It hands Claude the evidence, closes doors you've already checked so it doesn't repeat your work, and demands a spec before a fix, which forces explicit hypothesis ranking instead of guess-and-patch. This is the Spec → Plan → Code discipline applied to a bug. We will talk about this discipline later in detail.
+**Why it's good.** It hands Claude the evidence, closes the doors you've already checked so Claude doesn't redo your work, and forces a spec before a fix, which means explicit hypothesis ranking instead of guess-and-patch. It's the Spec → Plan → Code discipline from earlier in this section, applied to a bug.
 
 #### Example.3 Ask Claude to triage forty papers
 
@@ -209,13 +239,13 @@ The fastest way to get better at prompting is to look at two prompts for the sam
 
 > "Read these forty papers and tell me which ones are important."
 
-**Why it's bad.** "Important" is undefined, important to what? Processing forty PDFs sequentially will flood your main context with raw paper text and leave you with an unstructured blob you can't re-read in six weeks. No parallelism, no structure, no relevance criterion.
+**Why it's bad.** The word *important* isn't defined. Important for what? Forty PDFs read in sequence will flood your main context with raw paper text and leave you with a giant unstructured blob you can't come back to in six weeks. No parallelism, no structure, no relevance criterion.
 
 **Good prompt:**
 
 > "Spawn one subagent per PDF in `papers/`. Each subagent summarizes its paper against this template: (1) problem, (2) method in two sentences, (3) headline result, (4) relevance to our work on <topic>, (5) verdict, must-read / skim / skip. Collect all results into a single markdown table sorted by relevance. Do not include raw paper text in the replies."
 
-**Why it's good.** Parallelized via subagents, structured output you can filter later, an explicit relevance criterion that makes "important" concrete, and a noise-suppression clause that keeps your main context usable.
+**Why it's good.** It parallelizes the work across subagents. The output is structured, so you can actually filter it later. The relevance field turns the fuzzy notion of importance into something concrete. And the noise-suppression clause keeps your main context usable when the subagents report back.
 
 #### Example.4 Ask Claude to compute a custom metric
 
@@ -223,47 +253,19 @@ The fastest way to get better at prompting is to look at two prompts for the sam
 
 > "Compute <custom metric> on the eval set and report the number."
 
-**Why it's bad.** You'll get a number. It will look plausible. You will cite it. And eventually someone will find the off-by-one in the metric implementation, and "plausible" will have cost you a revision cycle, or a corrigendum. Numbers you don't verify are numbers you'll regret.
+**Why it's bad.** You'll get a number. It'll look plausible. You'll cite it. And eventually someone will find an off-by-one in the metric implementation, and that plausible-looking number will have cost you a revision round. Or worse, a corrigendum. Numbers you don't verify are numbers you'll regret citing.
 
 **Good prompt:**
 
 > "Before running <metric> on the real dataset, construct a tiny synthetic example with a known answer I can compute by hand. Run the metric on the synthetic example and show me the output. Only after I confirm it matches the hand-computed answer, run it on the real data."
 
-**Why it's good.** It makes the mindset shift's third implication, verify before trusting, especially numbers, literal. A synthetic known-answer test is cheap; the regret of citing a wrong metric is not.
-
-## For long-horizon tasks: Spec -> Plan -> Code
-
-The researcher's instinct is "just try it." Paste the pseudocode from the paper, run it, see what happens. That works for toy changes and falls apart on anything real, three hours later you're deep in a refactor you never agreed to, with no clear idea what "done" looks like.
-
-The discipline catching on is simple: write a **spec** before a plan, and a **plan** before code.
-
-- A **spec** answers *what* and *why*: what are we building, what counts as success, what's explicitly out of scope.
-- A **plan** answers *how*: what files change, in what order, what could break.
-- The **code** is the mechanical execution of an approved plan.
-
-Each stage is cheap to revise and expensive to skip. For research this maps cleanly onto how you already think: the spec is the experiment you're proposing, the plan is the runbook, the code is the implementation. As a bonus, a written spec is the artifact you'll actually want in your lab notebook six weeks from now, when you've forgotten why you made the choices you made.
-
-**Try this on your next task.** Instead of opening Claude and typing "implement X," start with:
-
-> "Before writing any code, draft a one-page spec for X: what we're building, success criteria, explicit non-goals, and the riskiest assumptions. Ask me questions until you're confident the spec is right."
-
-Then, once the spec is approved:
-
-> "Now turn this spec into a step-by-step implementation plan. For each step, list the files you'll touch and what could go wrong. Do not write code yet."
-
-You'll feel the difference within one task.
-
-**Have Claude keep a development journal.** On any project that spans more than a handful of sessions, ask Claude to maintain its own notes in a `docs/dev/` directory: one short file per significant problem encountered, recording the symptom, what you tried, what ended up working, and the one-line lesson worth remembering next time. A prompt that sets up the habit:
-
-> "From now on, whenever we hit a non-trivial bug, debug a surprising behavior, or make a design decision with real tradeoffs, write a short note in `docs/dev/YYYY-MM-DD-<slug>.md` with: problem, root cause, what we tried, what ended up working, and a one-line lesson. Keep each file under a page. Before starting any new task in this repo, re-read the most recent notes in `docs/dev/` and tell me if anything there is relevant to what I'm about to ask."
-
-Each note is cheap and easy to maintain, but they accumulate. Across many sessions, Claude starts consulting its own past notes before repeating your debugging, spotting patterns across bugs, and pushing back when you're about to walk into something already documented. In a small but real way, this is an **agent self-evolving** at the memory layer: every session ends with the agent a little more experienced in *your specific project* than it was when the session began. You don't need fine-tuning or fancy long-term memory architectures for this, a folder of markdown files and a prompt that tells Claude to read them first is already most of the value.
+**Why it's good.** It takes the rule of verifying before you trust, especially for numbers, and makes it completely literal. A synthetic, hand-checkable test case is cheap. Citing a wrong metric is not.
 
 ## Close
 
-The real unlock from Claude Code isn't speed. It's attention. Every task you hand off cleanly is attention reclaimed, attention you can spend on the parts of research that genuinely need a human: taste, judgment, the next question to ask, the result that doesn't fit and probably means something.
+The real win from Claude Code isn't speed. It's attention. Every task you hand off cleanly is attention given back to you. You can spend it on the parts of research that actually need a human: taste, judgment, the next question to ask, the result that doesn't fit the model and probably means something.
 
-Use the tool well, and the shift is noticeable: your days stop being about typing and start being about deciding. That's the smart way to use Claude.
+Use the tool well and the shift becomes obvious. Your days stop being about typing and start being about deciding. That's what it means to use Claude the smart way.
 
 ## Citation
 
