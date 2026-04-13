@@ -2,7 +2,7 @@
 
 Most people meet Claude Code and file it mentally as "a fancy autocomplete." That framing is why they get mediocre results. Claude Code isn't a faster keyboard — it's a collaborator you delegate to. The distinction matters most for researchers, because your bottleneck was never typing. It's attention: the scarce, finite budget you spend on which experiment to run, which bug is real, which paper is worth reading. Used well, Claude Code gives you that attention back. Used poorly, it just generates more things for you to review.
 
-## Spec → Plan → Code
+## How to spec before you code
 
 The researcher's instinct is "just try it." Paste the pseudocode from the paper, run it, see what happens. That works for toy changes and falls apart on anything real — three hours later you're deep in a refactor you never agreed to, with no clear idea what "done" looks like.
 
@@ -24,11 +24,11 @@ Then, once the spec is approved:
 
 You'll feel the difference within one task.
 
-## Power features worth the investment
+## How to set up Claude Code for real work
 
 A handful of features are worth learning on day one. Each one pays for itself the first time you use it.
 
-### `CLAUDE.md` — your project's briefing doc
+### How to write a CLAUDE.md
 
 A plain-text file at the root of your repo that Claude reads automatically on every session. Put the things a new collaborator would need: what the project is, how to run it, which directories matter, which gotchas have already burned you. Ten minutes of writing here saves hours of re-explaining later, and it compounds every session.
 
@@ -74,7 +74,7 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 
 Fill in the blanks honestly. The *Local environment*, *Network*, and *Gotchas* sections are where this file earns its keep — each line is either a mistake you don't have to make twice or a "why isn't anything working?" you don't have to rediscover from scratch.
 
-### Subagents — parallel work without context bloat
+### How to use subagents
 
 Spawn independent agents to work on tasks in parallel without polluting your main context. A subagent runs in its own conversation, absorbs the noise (file contents, grep output, failed attempts), and hands you back a clean final answer. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
 
@@ -98,7 +98,7 @@ The last sentence is the important part. Without it, the subagent may dutifully 
 
 **When NOT to use one.** If you need to iterate with Claude on the answer — argue, push back, refine — keep it in the main conversation. Subagents are for one-shot lookups and bulk work, not dialogue. And don't dispatch a subagent for something so small you could just answer it inline in three lines; the framing overhead isn't worth it.
 
-### Skills and plugins — reusable procedural knowledge
+### How to extend Claude with skills and plugins
 
 Skills and plugins are reusable capabilities Claude invokes on demand. Instead of re-explaining every session how you want TDD, debugging, or literature search to work, you install a skill once and it is available every session afterward. This is where the compounding value of the ecosystem lives — and it is worth spending real time here.
 
@@ -155,7 +155,7 @@ echo "Done. Restart Claude Code to activate the new plugins."
 
 The last three items are left as manual steps because their install commands depend on details (package names, MCP transport, credentials) that change more often than is safe to hardcode here — the repos themselves have the current instructions and they take a minute each.
 
-### Cross-model code review
+### How to cross-check Claude with another model
 
 One model reviewing its own work has blind spots. Two different models rarely share the same blind spot. The [**codex-plugin-cc**](https://github.com/openai/codex-plugin-cc) plugin lets you hand a diff to OpenAI's Codex for a second opinion from inside Claude Code. Researchers already trust ensembles over individual models when making predictions — the same logic applies to code review. It's the cheapest way to catch the bug Claude confidently wrote and then confidently approved.
 
@@ -175,7 +175,7 @@ Everything above — the mindset shift, spec-first discipline, subagents, verifi
 
 For each task below, both prompts take about the same amount of effort to type. The difference is not length. The difference is what the author already decided.
 
-### Task: reproducing a baseline from a messy repo
+### How to ask Claude to reproduce a baseline
 
 **Bad prompt:**
 
@@ -189,7 +189,7 @@ For each task below, both prompts take about the same amount of effort to type. 
 
 **Why it's good.** It names concrete artifacts (a CLAUDE.md, then a spec), defines success numerically, invites pushback so Claude doesn't silently guess, and parallelizes the noisy exploration across subagents. Every earlier principle in this article is compressed into this one prompt.
 
-### Task: debugging a NaN loss
+### How to ask Claude to debug a NaN loss
 
 **Bad prompt:**
 
@@ -203,7 +203,7 @@ For each task below, both prompts take about the same amount of effort to type. 
 
 **Why it's good.** It hands Claude the evidence, closes doors you've already checked so it doesn't repeat your work, and demands a spec before a fix — which forces explicit hypothesis ranking instead of guess-and-patch. This is the Spec → Plan → Code discipline from earlier, applied to a bug.
 
-### Task: triaging forty papers
+### How to ask Claude to triage forty papers
 
 **Bad prompt:**
 
@@ -217,7 +217,7 @@ For each task below, both prompts take about the same amount of effort to type. 
 
 **Why it's good.** Parallelized via subagents, structured output you can filter later, an explicit relevance criterion that makes "important" concrete, and a noise-suppression clause that keeps your main context usable.
 
-### Task: computing a custom metric on a real dataset
+### How to ask Claude to compute a custom metric
 
 **Bad prompt:**
 
@@ -231,7 +231,7 @@ For each task below, both prompts take about the same amount of effort to type. 
 
 **Why it's good.** It makes the mindset shift's third implication — verify before trusting, especially numbers — literal. A synthetic known-answer test is cheap; the regret of citing a wrong metric is not.
 
-### Meta-prompting: have Claude help you write the prompt
+### How to ask Claude to improve your prompts
 
 Sometimes the hardest part of a task is figuring out how to ask. **Meta-prompting** is exactly what it sounds like: using Claude to improve the prompt you're about to send Claude. It sounds silly until you try it and notice your first draft was missing half the context the task actually needed.
 
@@ -249,7 +249,7 @@ Two forms that reliably work:
 
 Meta-prompting is really just the mindset shift taken one step further: if you are onboarding a new teammate, sometimes the most productive thing you can do is let them interview you first.
 
-## Closing
+## How to spend the attention you get back
 
 The real unlock from Claude Code isn't speed. It's attention. Every task you hand off cleanly is attention reclaimed — attention you can spend on the parts of research that genuinely need a human: taste, judgment, the next question to ask, the result that doesn't fit and probably means something.
 
