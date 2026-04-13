@@ -12,7 +12,7 @@ A few things are worth doing up front. Each of them pays off the first time you 
 
 `CLAUDE.md` is a plain text file you drop at the root of your repo. Claude reads it automatically at the start of every session. Treat it like the onboarding doc you'd write for a new collaborator: what the project is, how to run things, which directories matter, which things have already bitten you. Ten minutes spent writing it saves a lot of re-explaining later, and every session afterward gets to start from that higher baseline.
 
-If you're a researcher or a PhD student, your `CLAUDE.md` really should describe your local setup: GPUs, network config, Python env, and anything else Claude needs to know to actually run experiments on your machine. Here's a template you can lift and edit in about five minutes:
+If you're a researcher or a PhD student, your `CLAUDE.md` really should describe your local setup: GPUs, network config, Python env, and anything else Claude needs to know to actually run experiments on your machine. Here's a template you can lift and edit:
 
 ```markdown
 # Project: <name>
@@ -22,7 +22,7 @@ One paragraph: the research question, the approach, and what counts as success.
 
 ## Local environment
 - **GPUs:** 8× A800 40GB. Use whichever are idle, check with `nvidia-smi` before launching a run.
-- **Conda env:** `clsea` is already set up; `conda activate clsea`. Do not create a new env.
+- **Conda env:** `test` is already set up; `conda activate test`. Do not create a new env.
 - **Versions:** Python 3.11, CUDA 12.1, torch 2.3.1 (pinned, see Gotchas).
 
 ## Network
@@ -51,8 +51,6 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 - Seeds are set in `configs/base.yaml`, not in the training script
 - W&B project is `myproject-dev`; `myproject` is reserved for paper runs
 ```
-
-Fill it in honestly.
 
 ### Extend Claude with skills and plugins
 
