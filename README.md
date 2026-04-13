@@ -54,30 +54,6 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 
 Fill in the blanks honestly.
 
-### Use subagents
-
-Spawn independent agents to work on tasks in parallel without polluting your main context. A subagent runs in its own conversation, absorbs the noise (file contents, grep output, failed attempts), and hands you back a clean final answer. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
-
-**When to reach for one.** The test is simple. If a task is (a) *independent*, you don't need to argue with Claude mid-task, and (b) *noisy*, doing it inline would flood the main conversation with hundreds of lines of file contents or logs, it belongs in a subagent. Pattern-match on these:
-
-- "Find every place in the repo that sets a learning rate, and give me a table of filename, line, and value."
-- "Read these twelve candidate files and tell me which one contains the metric definition we're looking for."
-- "Run the test suite and report only which tests failed and the one-line reason for each."
-- "Summarize what this 800-line YAML config actually controls, grouped by subsystem."
-- "Audit all `*.ipynb` files in `notebooks/` and list any that import from `src/legacy/`."
-
-**How to dispatch one.** You do not need special syntax, you ask for it. A prompt that works:
-
-> "Dispatch a subagent to answer this: <question>. The subagent should <read these files / run this command / search for this pattern>. Return only the final answer plus file/line references. Do not include intermediate file contents or tool output in the reply."
-
-The last sentence is the important part. Without it, the subagent may dutifully paste everything it read into its response, which defeats the whole purpose. Tell it explicitly to absorb the noise and hand you back only the signal.
-
-**Dispatching several at once.** The real multiplier is parallelism. Two or four subagents working at the same time finish in roughly the time of one:
-
-> "Dispatch four subagents in parallel. Subagent 1: audit `src/` for learning-rate settings. Subagent 2: audit `configs/` for the same. Subagent 3: check `scripts/` for any hardcoded overrides. Subagent 4: check `notebooks/` for ad-hoc experiments. Each returns a short table. Collect all four into one summary when they're done."
-
-**When NOT to use one.** If you need to iterate with Claude on the answer, like argue, push back, and refine, then keep it in the main conversation. Subagents are for one-shot lookups and bulk work, not dialogue. And don't dispatch a subagent for something so small you could just answer it inline in three lines; the framing overhead isn't worth it.
-
 ### Extend Claude with skills and plugins
 
 Skills and plugins are reusable capabilities Claude invokes on demand. Instead of re-explaining every session how you want TDD, debugging, or literature search to work, you install a skill once and it is available every session afterward. This is where the compounding value of the ecosystem lives, and it is worth spending real time here.
@@ -151,7 +127,31 @@ The "specific lines" clause matters, a vague "looks fine" is useless, and a spec
 
 ## How to write smart prompts in a work
 
-Everything above, the mindset shift, spec-first discipline, subagents, verification, comes together in the prompts you actually type. A good prompt is not magic phrasing. It is the compressed form of everything you already decided before touching the keyboard. 
+After completing these basic settings, we can finally start using Claude to do some tasks. The basic way humans interact with Claude is by writing prompts. A good prompt is not magic phrasing. It is the compressed form of everything you already decided before touching the keyboard. 
+
+### Use subagents
+
+Spawn independent agents to work on tasks in parallel without polluting your main context. A subagent runs in its own conversation, absorbs the noise (file contents, grep output, failed attempts), and hands you back a clean final answer. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
+
+**When to reach for one.** The test is simple. If a task is (a) *independent*, you don't need to argue with Claude mid-task, and (b) *noisy*, doing it inline would flood the main conversation with hundreds of lines of file contents or logs, it belongs in a subagent. Pattern-match on these:
+
+- "Find every place in the repo that sets a learning rate, and give me a table of filename, line, and value."
+- "Read these twelve candidate files and tell me which one contains the metric definition we're looking for."
+- "Run the test suite and report only which tests failed and the one-line reason for each."
+- "Summarize what this 800-line YAML config actually controls, grouped by subsystem."
+- "Audit all `*.ipynb` files in `notebooks/` and list any that import from `src/legacy/`."
+
+**How to dispatch one.** You do not need special syntax, you ask for it. A prompt that works:
+
+> "Dispatch a subagent to answer this: <question>. The subagent should <read these files / run this command / search for this pattern>. Return only the final answer plus file/line references. Do not include intermediate file contents or tool output in the reply."
+
+The last sentence is the important part. Without it, the subagent may dutifully paste everything it read into its response, which defeats the whole purpose. Tell it explicitly to absorb the noise and hand you back only the signal.
+
+**Dispatching several at once.** The real multiplier is parallelism. Two or four subagents working at the same time finish in roughly the time of one:
+
+> "Dispatch four subagents in parallel. Subagent 1: audit `src/` for learning-rate settings. Subagent 2: audit `configs/` for the same. Subagent 3: check `scripts/` for any hardcoded overrides. Subagent 4: check `notebooks/` for ad-hoc experiments. Each returns a short table. Collect all four into one summary when they're done."
+
+**When NOT to use one.** If you need to iterate with Claude on the answer, like argue, push back, and refine, then keep it in the main conversation. Subagents are for one-shot lookups and bulk work, not dialogue. And don't dispatch a subagent for something so small you could just answer it inline in three lines; the framing overhead isn't worth it.
 
 ### Meta-Prompting
 

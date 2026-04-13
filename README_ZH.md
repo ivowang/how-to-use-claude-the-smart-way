@@ -52,30 +52,6 @@ Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push 
 - W&B project is `myproject-dev`; `myproject` is reserved for paper runs
 ```
 
-### 使用 subagents
-
-把独立的任务派发给独立的 agent，让它们并行地工作而不污染你的主上下文。Subagent 在自己的对话里运行，替你吸收噪音(文件内容、grep 输出、失败的尝试)，最后只把一个干净的答案交到你手里。研究者应该像看待后台进程一样看待 subagent：只要是独立的任务，就派发出去。
-
-**什么时候该用 subagent。** 判断很简单。如果一个任务同时满足：(a) *独立*，你不需要在中途和 Claude 来回讨论；(b) *嘈杂*，在主对话里直接做会灌进去几百行文件内容或日志，那它就应该放到 subagent 里。照着下面几个例子去找感觉：
-
-- "把 repo 里所有设置学习率的地方都找出来，给我一张表：文件名、行号、具体的值。"
-- "读下面这 12 个候选文件，告诉我哪一个包含我们要找的那个 metric 的定义。"
-- "跑一遍测试套件，只告诉我哪些测试挂了，每个挂掉的原因用一句话总结。"
-- "这份 800 行的 YAML 配置实际上控制了什么?按子系统分组总结。"
-- "审计 `notebooks/` 下所有 `*.ipynb` 文件，列出任何还在从 `src/legacy/` 里 import 的 notebook。"
-
-**怎么派发一个 subagent。** 你不需要什么特殊语法，你只是把它说出来。下面这个 prompt 就能工作：
-
-> "Dispatch a subagent to answer this: <question>. The subagent should <read these files / run this command / search for this pattern>. Return only the final answer plus file/line references. Do not include intermediate file contents or tool output in the reply."
-
-最后那句话是关键。没有它的话，subagent 可能会乖乖地把它读过的所有东西都贴回回复里，那样就完全失去了用 subagent 的意义。你必须显式地告诉它：替我把噪音吞掉，只把信号交回来。
-
-**同时派发多个。** 真正的倍增器是并行。两个或四个 subagent 同时跑，耗时大约等于一个：
-
-> "Dispatch four subagents in parallel. Subagent 1: audit `src/` for learning-rate settings. Subagent 2: audit `configs/` for the same. Subagent 3: check `scripts/` for any hardcoded overrides. Subagent 4: check `notebooks/` for ad-hoc experiments. Each returns a short table. Collect all four into one summary when they're done."
-
-**什么时候不要用 subagent。** 如果你需要和 Claude 反复讨论一个答案，如争论、反驳、迭代，就留在主对话里。Subagent 是为一次性查询和批量工作准备的，不是为对话准备的。另外，如果一个任务小到三行就能答完，也别派发 subagent，那点派发成本不值得。
-
 ### 用 skills 和 plugins 扩展 Claude
 
 Skills 和 plugins 是 Claude 可以按需调用的可复用能力。不用每次会话都重新解释你想要的 TDD、调试或文献检索工作流是什么样子，装一次 skill，以后每次会话它都在。这是整个生态中复利效应最明显的地方，值得你在这里投入真正的时间。
@@ -149,7 +125,31 @@ echo "Done. Restart Claude Code to activate the new plugins."
 
 ## 如何在工作过程中写好 prompt
 
-前面讲的一切，思维模式的转变、spec-first 的纪律、subagent、验证，最终都会汇聚到你真正敲下去的那段 prompt 里。一个好的 prompt 不是什么魔法措辞。它是你在碰键盘之前就已经想清楚的一切东西的压缩形式。
+完成这些基本设置后，我们终于可以开始使用 Claude 来做一些事。人类与 Claude 互动的基本方式是撰写 prompt。一个好的 prompt 不是什么魔法措辞。它是你在碰键盘之前就已经想清楚的一切东西的压缩形式。
+
+### 使用 subagents
+
+把独立的任务派发给独立的 agent，让它们并行地工作而不污染你的主上下文。Subagent 在自己的对话里运行，替你吸收噪音(文件内容、grep 输出、失败的尝试)，最后只把一个干净的答案交到你手里。研究者应该像看待后台进程一样看待 subagent：只要是独立的任务，就派发出去。
+
+**什么时候该用 subagent。** 判断很简单。如果一个任务同时满足：(a) *独立*，你不需要在中途和 Claude 来回讨论；(b) *嘈杂*，在主对话里直接做会灌进去几百行文件内容或日志，那它就应该放到 subagent 里。照着下面几个例子去找感觉：
+
+- "把 repo 里所有设置学习率的地方都找出来，给我一张表：文件名、行号、具体的值。"
+- "读下面这 12 个候选文件，告诉我哪一个包含我们要找的那个 metric 的定义。"
+- "跑一遍测试套件，只告诉我哪些测试挂了，每个挂掉的原因用一句话总结。"
+- "这份 800 行的 YAML 配置实际上控制了什么?按子系统分组总结。"
+- "审计 `notebooks/` 下所有 `*.ipynb` 文件，列出任何还在从 `src/legacy/` 里 import 的 notebook。"
+
+**怎么派发一个 subagent。** 你不需要什么特殊语法，你只是把它说出来。下面这个 prompt 就能工作：
+
+> "Dispatch a subagent to answer this: <question>. The subagent should <read these files / run this command / search for this pattern>. Return only the final answer plus file/line references. Do not include intermediate file contents or tool output in the reply."
+
+最后那句话是关键。没有它的话，subagent 可能会乖乖地把它读过的所有东西都贴回回复里，那样就完全失去了用 subagent 的意义。你必须显式地告诉它：替我把噪音吞掉，只把信号交回来。
+
+**同时派发多个。** 真正的倍增器是并行。两个或四个 subagent 同时跑，耗时大约等于一个：
+
+> "Dispatch four subagents in parallel. Subagent 1: audit `src/` for learning-rate settings. Subagent 2: audit `configs/` for the same. Subagent 3: check `scripts/` for any hardcoded overrides. Subagent 4: check `notebooks/` for ad-hoc experiments. Each returns a short table. Collect all four into one summary when they're done."
+
+**什么时候不要用 subagent。** 如果你需要和 Claude 反复讨论一个答案，如争论、反驳、迭代，就留在主对话里。Subagent 是为一次性查询和批量工作准备的，不是为对话准备的。另外，如果一个任务小到三行就能答完，也别派发 subagent，那点派发成本不值得。
 
 ### Meta-Prompting
 
