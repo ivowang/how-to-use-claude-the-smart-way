@@ -133,7 +133,7 @@ done
 echo "Done. Restart Claude Code to activate the new plugins."
 ```
 
-The last three items are left as manual steps because their install commands depend on details (package names, MCP transport, credentials) that change more often than is safe to hardcode here, the repos themselves have the current instructions and they take a minute each.
+The last three items are left as manual steps because their install commands depend on details (package names, MCP transport, credentials) that change more often than is safe to hardcode here.
 
 ### Cross-check Claude with another model
 
