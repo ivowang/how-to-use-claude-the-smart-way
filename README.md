@@ -1,1 +1,1 @@
-# How to Vibe-Coding the Smart Way
+# How to Use Claude the Smart Way
