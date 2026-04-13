@@ -1,18 +1,6 @@
 # How to Use Claude the Smart Way
 
-*A short guide for AI researchers.*
-
-## The misread
-
 Most people meet Claude Code and file it mentally as "a fancy autocomplete." That framing is why they get mediocre results. Claude Code isn't a faster keyboard — it's a collaborator you delegate to. The distinction matters most for researchers, because your bottleneck was never typing. It's attention: the scarce, finite budget you spend on which experiment to run, which bug is real, which paper is worth reading. Used well, Claude Code gives you that attention back. Used poorly, it just generates more things for you to review.
-
-## The mindset shift
-
-Stop thinking of yourself as "prompting a tool." Start thinking of yourself as onboarding a new teammate — one with no context, no memory of yesterday, and infinite patience. Every interaction is day one for them. This reframe has three immediate consequences:
-
-- **Invest in context before you ask for output.** A teammate who understands the repo, the goal, and the constraints produces work you can use. A teammate who doesn't produces work you have to rewrite. Front-load the briefing.
-- **Think in tasks, not keystrokes.** Don't ask Claude to "write a for loop." Ask it to "add a validation step that flags runs where eval loss diverges from train loss by more than 2x." The bigger and better-specified the task, the more leverage you get out of each turn.
-- **Verify before you trust — especially numbers.** Claude is confident, not correct. For a researcher that's an existential caveat: your entire job is numbers, and a plausible-looking table is worse than no table at all. Check the ones that matter yourself.
 
 ## Spec → Plan → Code
 
@@ -52,10 +40,14 @@ Here's a starter template you can paste into your own repo and edit in five minu
 ## What this is
 One paragraph: the research question, the approach, and what counts as success.
 
+## Local environment
+- **GPUs:** 8× A800 40GB. Use whichever are idle — check with `nvidia-smi` before launching a run.
+- **Conda env:** `clsea` is already set up; `conda activate clsea`. Do not create a new env.
+- **Versions:** Python 3.11, CUDA 12.1, torch 2.3.1 (pinned — see Gotchas).
+
 ## How to run things
 - Train: `python train.py --config configs/base.yaml`
 - Eval:  `python eval.py --ckpt checkpoints/latest.pt`
-- Env:   `conda activate <envname>` (Python 3.11, CUDA 12.1, torch 2.3.1 pinned)
 
 ## Where things live
 - `configs/`   — experiment configs; `base.yaml` is the canonical starting point
@@ -64,6 +56,15 @@ One paragraph: the research question, the approach, and what counts as success.
 - `scripts/`   — one-off analysis; not source of truth
 - `notebooks/` — exploration only; never import from these
 
+## Network
+We're behind the Great Firewall. If `pip`, `git`, HuggingFace, or any OpenAI/Google endpoint hangs, run `clashon` to enable the proxy and retry. A hang is almost always a network issue, not a bug — don't debug the wrong problem.
+
+## LLM API access
+API keys for Qwen / GPT / Gemini / Claude live in `.env` at the repo root. Load them with `python-dotenv` or `source .env`. Never hardcode a key in a script, and never commit `.env`.
+
+## Git
+Remote is `github.com/ivowang/how-to-use-claude-the-smart-way`. Commit and push regularly; prefer small, self-contained commits over a single end-of-day dump.
+
 ## Gotchas
 - Eval silently skips NaN-loss batches; check `logs/skipped.txt` after every run
 - Do NOT upgrade torch past 2.3.1 — breaks the custom CUDA kernel in `src/ops/`
@@ -71,7 +72,7 @@ One paragraph: the research question, the approach, and what counts as success.
 - W&B project is `myproject-dev`; `myproject` is reserved for paper runs
 ```
 
-Fill in the blanks honestly. The gotchas section is where this file earns its keep — every line there is a mistake you don't have to make twice.
+Fill in the blanks honestly. The *Local environment*, *Network*, and *Gotchas* sections are where this file earns its keep — each line is either a mistake you don't have to make twice or a "why isn't anything working?" you don't have to rediscover from scratch.
 
 ### Subagents — parallel work without context bloat
 
