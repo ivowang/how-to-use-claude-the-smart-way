@@ -77,31 +77,37 @@ Fill in the blanks honestly. The gotchas section is where this file earns its ke
 
 Spawn independent agents to work on tasks in parallel without polluting your main context. "Search the entire codebase for every place we set a learning rate" is a subagent job — it returns a short answer without flooding your main conversation with thousands of lines of grep output. Researchers should think of subagents the way they think of background processes: anything independent, dispatch it.
 
-### Skills — reusable procedural knowledge
+### Skills and plugins — reusable procedural knowledge
 
-Skills are reusable procedural knowledge Claude invokes on demand. Instead of re-explaining every session how you want TDD, debugging, or brainstorming to work, a skill captures it once.
+Skills and plugins are reusable capabilities Claude invokes on demand. Instead of re-explaining every session how you want TDD, debugging, or literature search to work, you install a skill once and it is available every session afterward. This is where the compounding value of the ecosystem lives — and it is worth spending real time here.
 
-The [**superpowers**](https://github.com/obra/superpowers) plugin bundles battle-tested skills for exactly these workflows — brainstorming, writing plans, systematic debugging, TDD, verification-before-completion. Install it, read what's in it, and your baseline quality jumps noticeably without any extra effort on your part. Follow the install instructions in the repo; it takes under a minute, and it is the single highest-leverage change you can make after finishing this article.
+**The one install you should not skip.**
+
+- [**superpowers**](https://github.com/obra/superpowers) — the most load-bearing install in this article. Bundles battle-tested skills for brainstorming, writing plans, systematic debugging, TDD, and verification-before-completion. Installs in under a minute, and your baseline quality jumps noticeably without any extra effort on your part.
+
+**Official Anthropic plugins** ([anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)). A curated set of first-party plugins. The ones most relevant to research work:
+
+- [**feature-dev**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/feature-dev) — a structured spec → plan → implement → verify workflow, packaged as a plugin. Pairs directly with the discipline described above.
+- [**code-simplifier**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-simplifier) — reviews changed code for reuse, quality, and efficiency, then fixes what it finds. Keeps prototype code from rotting into spaghetti before a collaborator sees it.
+- [**claude-md-management**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management) — creates, audits, and maintains your CLAUDE.md. A clean CLAUDE.md improves every subsequent session, and this plugin removes the excuse of "I'll update it later."
+- [**skill-creator**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) — the meta-skill for writing new skills. The fastest path to capturing a repeatable research workflow (your preferred figure style, your dataset-loading boilerplate, your eval runner) as a reusable skill of your own.
+- [**ralph-loop**](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop) — runs Claude Code in a recursive autonomous loop until a specification is satisfied. Designed for unattended overnight iteration: config sweeps, flaky-test matrices, grinding through TODO backlogs while you sleep.
+
+**Browser automation and visual verification.**
+
+- [**playwright-skill**](https://github.com/lackeyjb/playwright-skill) — lets Claude drive a real browser via Playwright to run E2E tests and verify visual output. Researchers building web-based demos, interactive dashboards, or paper artifact sites can have Claude check the thing actually works end-to-end instead of just compiling.
+
+**Literature and papers.**
+
+- [**paper-search-mcp**](https://github.com/openags/paper-search-mcp) — an MCP server giving Claude direct access to arXiv, PubMed, bioRxiv, medRxiv, and Google Scholar. Install this and your literature-triage workflow stops being "manually dump PDFs into a directory" and becomes "ask Claude to go fetch them."
+
+**The directory.** The ecosystem moves fast, and any list in a README will go stale. Instead, bookmark the canonical index and browse it every couple of weeks:
+
+- [**awesome-claude-code**](https://github.com/hesreallyhim/awesome-claude-code) — the community index of skills, hooks, slash-commands, plugins, and agent orchestrators. Spend five minutes there periodically and you will notice the ecosystem before it notices you.
 
 ### Cross-model code review
 
 One model reviewing its own work has blind spots. Two different models rarely share the same blind spot. The [**codex-plugin-cc**](https://github.com/openai/codex-plugin-cc) plugin lets you hand a diff to OpenAI's Codex for a second opinion from inside Claude Code. Researchers already trust ensembles over individual models when making predictions — the same logic applies to code review. It's the cheapest way to catch the bug Claude confidently wrote and then confidently approved.
-
-### More skills and plugins worth knowing about
-
-Superpowers and codex-plugin-cc are the two most load-bearing installs, but the ecosystem is moving fast and the highest-leverage choice for *your* workflow may be something more specialized. A few entry points worth bookmarking:
-
-**The directory.** Instead of hardcoding a list that will go stale, point yourself at the curated index:
-
-- [**awesome-claude-code**](https://github.com/hesreallyhim/awesome-claude-code) — the canonical index of skills, hooks, slash-commands, plugins, and agent orchestrators. If you spend five minutes here every couple of weeks, you'll notice the ecosystem before it notices you.
-
-**Paper and arXiv tools for researchers specifically.** A handful of MCP servers let Claude fetch and read papers directly inside your session, so your literature-triage workflow stops being "manually dump PDFs into a directory" and becomes "ask Claude to go fetch them."
-
-- [**arxiv-mcp-server**](https://github.com/blazickjp/arxiv-mcp-server) — search and analyze arXiv papers from inside Claude Code. The most battle-tested option if you live on arXiv.
-- [**paper-search-mcp**](https://github.com/openags/paper-search-mcp) — broader coverage: arXiv, PubMed, bioRxiv, medRxiv, Google Scholar. Pick this one if your field isn't only CS.
-- [**arxiv-latex-mcp**](https://github.com/takashiishida/arxiv-latex-mcp) — fetches a paper's LaTeX source instead of the PDF, so Claude reads equations precisely instead of mangling them through OCR. Niche, but uniquely valuable for theory papers where the math is the whole point.
-
-Install one paper tool and one directory bookmark and you are already ahead of most people using Claude Code today.
 
 ## Researcher workflows in practice
 
